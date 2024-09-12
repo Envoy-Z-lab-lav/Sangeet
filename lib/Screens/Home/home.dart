@@ -557,7 +557,7 @@ class _HomePageState extends State<HomePage> {
                                                           AppLocalizations.of(
                                                             context,
                                                           )!
-                                                              .homeGreet,
+                                                              .discover,
                                                           style: TextStyle(
                                                             letterSpacing: 2,
                                                             color: Theme.of(
