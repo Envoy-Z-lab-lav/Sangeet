@@ -558,13 +558,13 @@ class _HomePageState extends State<HomePage> {
                                                           )!
                                                               .discover,
                                                           style: TextStyle(
-                                                            letterSpacing: 2,
+                                                            letterSpacing: 3,
                                                             color: Theme.of(
                                                               context,
                                                             )
                                                                 .colorScheme
                                                                 .secondary,
-                                                            fontSize: 30,
+                                                            fontSize: 50,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
