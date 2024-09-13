@@ -46,13 +46,12 @@ jobs:
       - name: Install Flutter Dependencies
         run: flutter pub get
 
-      # Build APK
-      - name: Build APK
-        run: flutter build apk --debug
+      # Build APKs
+      - run: flutter build apk --debug --split-per-abi
 
-      # Upload APK
+      # Upload APKs
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flutter-apks
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk
