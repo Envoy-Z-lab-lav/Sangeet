@@ -8,12 +8,12 @@ class MyTheme with ChangeNotifier {
   bool _useSystemTheme =
       Hive.box('settings').get('useSystemTheme', defaultValue: false) as bool;
 
-  String accentColor = Hive.box('settings')
-      .get('themeColor', defaultValue: 'Light Blue') as String;
-  String canvasColor =
-      Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
+  String accentColor =
+      Hive.box('settings').get('themeColor', defaultValue: 'White') as String;
+  String canvasColor = Hive.box('settings')
+      .get('canvasColor', defaultValue: '#000326') as String;
   String cardColor =
-      Hive.box('settings').get('cardColor', defaultValue: 'Grey900') as String;
+      Hive.box('settings').get('cardColor', defaultValue: '#000326') as String;
 
   int backGrad = Hive.box('settings').get('backGrad', defaultValue: 2) as int;
   int cardGrad = Hive.box('settings').get('cardGrad', defaultValue: 4) as int;
@@ -122,10 +122,10 @@ class MyTheme with ChangeNotifier {
         settingsBox.get('useSystemTheme', defaultValue: false) as bool;
 
     accentColor =
-        settingsBox.get('themeColor', defaultValue: 'Light Blue') as String;
+        settingsBox.get('themeColor', defaultValue: 'White') as String;
     canvasColor =
-        settingsBox.get('canvasColor', defaultValue: 'Grey') as String;
-    cardColor = settingsBox.get('cardColor', defaultValue: 'Grey900') as String;
+        settingsBox.get('canvasColor', defaultValue: '#000326') as String;
+    cardColor = settingsBox.get('cardColor', defaultValue: '#000326') as String;
 
     backGrad = settingsBox.get('backGrad', defaultValue: 2) as int;
     cardGrad = settingsBox.get('cardGrad', defaultValue: 4) as int;
@@ -214,7 +214,7 @@ class MyTheme with ChangeNotifier {
   Color getCanvasColor() {
     if (canvasColor == 'Black') return Colors.black;
     if (canvasColor == 'Grey') return Colors.grey[900]!;
-    return Colors.grey[900]!;
+    return const Color(0xFF000326);
   }
 
   void switchCanvasColor(String color, {bool notify = true}) {
@@ -228,7 +228,7 @@ class MyTheme with ChangeNotifier {
     if (cardColor == 'Grey850') return Colors.grey[850]!;
     if (cardColor == 'Grey900') return Colors.grey[900]!;
     if (cardColor == 'Black') return Colors.black;
-    return Colors.grey[850]!;
+    return const Color(0xFF000326);
   }
 
   void switchCardColor(String color, {bool notify = true}) {
@@ -295,9 +295,7 @@ class MyTheme with ChangeNotifier {
         return Colors.white;
 
       default:
-        return _isDark
-            ? Colors.greenAccent[400]!
-            : Colors.lightBlueAccent[400]!;
+        return _isDark ? const Color(0xFF000326) : Colors.lightBlueAccent[400]!;
     }
   }
 

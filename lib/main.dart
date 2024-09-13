@@ -259,7 +259,7 @@ class _MyAppState extends State<MyApp> {
       restorationScopeId: 'sangeet',
       debugShowCheckedModeBanner: false,
       themeMode: AppTheme.themeMode,
-      theme: AppTheme.lightTheme(
+      theme: AppTheme.darkTheme(
         context: context,
       ),
       darkTheme: AppTheme.darkTheme(

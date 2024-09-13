@@ -13,7 +13,6 @@ import 'package:sangeet/CustomWidgets/custom_physics.dart';
 import 'package:sangeet/CustomWidgets/gradient_containers.dart';
 import 'package:sangeet/CustomWidgets/miniplayer.dart';
 import 'package:sangeet/CustomWidgets/snackbar.dart';
-import 'package:sangeet/CustomWidgets/textinput_dialog.dart';
 import 'package:sangeet/Helpers/backup_restore.dart';
 import 'package:sangeet/Helpers/downloads_checker.dart';
 import 'package:sangeet/Helpers/github.dart';
