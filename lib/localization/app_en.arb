@@ -451,6 +451,8 @@
   "@proxySetSub": {},
   "radio": "Radio",
   "@radio": {},
+  "recommended": "Recommended for you",
+  "@recommended": {},
   "rememberChoice": "Remember my choice",
   "@rememberChoice": {},
   "remove": "Remove",

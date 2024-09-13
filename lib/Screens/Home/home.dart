@@ -37,8 +37,6 @@ class _HomePageState extends State<HomePage> {
   bool checked = false;
   String? appVersion;
 
-  String name =
-      Hive.box('settings').get('name', defaultValue: 'Guest') as String;
   bool checkUpdate =
       Hive.box('settings').get('checkUpdate', defaultValue: false) as bool;
   bool autoBackup =
@@ -541,113 +539,67 @@ class _HomePageState extends State<HomePage> {
                                           ) {
                                             return FlexibleSpaceBar(
                                               // collapseMode: CollapseMode.parallax,
-                                              background: GestureDetector(
-                                                onTap: () async {
-                                                  await showTextInputDialog(
-                                                    context: context,
-                                                    title: 'Name',
-                                                    initialText: name,
-                                                    keyboardType:
-                                                        TextInputType.name,
-                                                    onSubmitted: (value) {
-                                                      Hive.box('settings').put(
-                                                        'name',
-                                                        value.trim(),
-                                                      );
-                                                      name = value.trim();
-                                                      Navigator.pop(context);
-                                                    },
-                                                  );
-                                                  setState(() {});
-                                                },
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: <Widget>[
-                                                    const SizedBox(
-                                                      height: 60,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                            left: 15.0,
-                                                          ),
-                                                          child: Text(
-                                                            AppLocalizations.of(
+                                              background: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  const SizedBox(
+                                                    height: 60,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          left: 15.0,
+                                                        ),
+                                                        child: Text(
+                                                          AppLocalizations.of(
+                                                            context,
+                                                          )!
+                                                              .homeGreet,
+                                                          style: TextStyle(
+                                                            letterSpacing: 2,
+                                                            color: Theme.of(
                                                               context,
-                                                            )!
-                                                                .homeGreet,
-                                                            style: TextStyle(
-                                                              letterSpacing: 2,
-                                                              color: Theme.of(
-                                                                context,
-                                                              )
-                                                                  .colorScheme
-                                                                  .secondary,
-                                                              fontSize: 30,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
+                                                            )
+                                                                .colorScheme
+                                                                .secondary,
+                                                            fontSize: 30,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                      left: 15.0,
+                                                    ),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        Text(
+                                                          AppLocalizations.of(
+                                                            context,
+                                                          )!
+                                                              .recommended,
+                                                          style:
+                                                              const TextStyle(
+                                                            letterSpacing: 2,
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.w500,
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                        left: 15.0,
-                                                      ),
-                                                      child: Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          ValueListenableBuilder(
-                                                            valueListenable:
-                                                                Hive.box(
-                                                              'settings',
-                                                            ).listenable(),
-                                                            builder: (
-                                                              BuildContext
-                                                                  context,
-                                                              Box box,
-                                                              Widget? child,
-                                                            ) {
-                                                              return Text(
-                                                                (box.get('name') ==
-                                                                            null ||
-                                                                        box.get('name') ==
-                                                                            '')
-                                                                    ? 'Guest'
-                                                                    : box
-                                                                        .get(
-                                                                          'name',
-                                                                        )
-                                                                        .split(
-                                                                          ' ',
-                                                                        )[0]
-                                                                        .toString(),
-                                                                style:
-                                                                    const TextStyle(
-                                                                  letterSpacing:
-                                                                      2,
-                                                                  fontSize: 20,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             );
                                           },
