@@ -35,37 +35,31 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   bool checked = false;
   String? appVersion;
-
   bool checkUpdate =
       Hive.box('settings').get('checkUpdate', defaultValue: false) as bool;
   bool autoBackup =
       Hive.box('settings').get('autoBackup', defaultValue: false) as bool;
-  List sectionsToShow = Hive.box('settings').get(
-    'sectionsToShow',
-    defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library'],
-  ) as List;
+  List sectionsToShow = Hive.box('settings').get('sectionsToShow',
+      defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library']) as List;
   DateTime? backButtonPressTime;
+  final ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController();
 
   void callback() {
-    sectionsToShow = Hive.box('settings').get(
-      'sectionsToShow',
-      defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library'],
-    ) as List;
+    sectionsToShow = Hive.box('settings').get('sectionsToShow',
+        defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library']) as List;
     setState(() {});
   }
 
   void _onItemTapped(int index) {
     _selectedIndex.value = index;
-    _pageController.jumpToPage(
-      index,
-    );
+    _pageController.jumpToPage(index);
   }
 
   bool compareVersion(String latestVersion, String currentVersion) {
     bool update = false;
     final List latestList = latestVersion.split('.');
     final List currentList = currentVersion.split('.');
-
     for (int i = 0; i < latestList.length; i++) {
       try {
         if (int.parse(latestList[i] as String) >
@@ -86,15 +80,11 @@ class _HomePageState extends State<HomePage> {
     final backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
         backButtonPressTime == null ||
             now.difference(backButtonPressTime!) > const Duration(seconds: 3);
-
     if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
       backButtonPressTime = now;
       ShowSnackBar().showSnackBar(
-        context,
-        AppLocalizations.of(context)!.exitConfirm,
-        duration: const Duration(seconds: 2),
-        noAction: true,
-      );
+          context, AppLocalizations.of(context)!.exitConfirm,
+          duration: const Duration(seconds: 2), noAction: true);
       return false;
     }
     return true;
@@ -103,100 +93,57 @@ class _HomePageState extends State<HomePage> {
   Widget checkVersion() {
     if (!checked) {
       checked = true;
-
       PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
         appVersion = packageInfo.version;
-
         if (checkUpdate) {
           GitHub.getLatestVersion().then((String version) async {
-            if (compareVersion(
-              version,
-              appVersion!,
-            )) {
+            if (compareVersion(version, appVersion!)) {
               ShowSnackBar().showSnackBar(
-                context,
-                AppLocalizations.of(context)!.updateAvailable,
-                duration: const Duration(seconds: 15),
-                action: SnackBarAction(
-                  textColor: Theme.of(context).colorScheme.secondary,
-                  label: AppLocalizations.of(context)!.update,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    launchUrl(
-                      Uri.parse('https://sumanishere.github.io/Sangeet/'),
-                      mode: LaunchMode.externalApplication,
-                    );
-                  },
-                ),
-              );
+                  context, AppLocalizations.of(context)!.updateAvailable,
+                  duration: const Duration(seconds: 15),
+                  action: SnackBarAction(
+                      textColor: Theme.of(context).colorScheme.secondary,
+                      label: AppLocalizations.of(context)!.update,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        launchUrl(
+                            Uri.parse('https://sumanishere.github.io/Sangeet/'),
+                            mode: LaunchMode.externalApplication);
+                      }));
             }
           });
         }
         if (autoBackup) {
           final List<String> checked = [
-            AppLocalizations.of(
-              context,
-            )!
-                .settings,
-            AppLocalizations.of(
-              context,
-            )!
-                .downs,
-            AppLocalizations.of(
-              context,
-            )!
-                .playlists,
+            AppLocalizations.of(context)!.settings,
+            AppLocalizations.of(context)!.downs,
+            AppLocalizations.of(context)!.playlists
           ];
-          final List playlistNames = Hive.box('settings').get(
-            'playlistNames',
-            defaultValue: ['Favorite Songs'],
-          ) as List;
+          final List playlistNames = Hive.box('settings')
+              .get('playlistNames', defaultValue: ['Favorite Songs']) as List;
           final Map<String, List> boxNames = {
-            AppLocalizations.of(
-              context,
-            )!
-                .settings: ['settings'],
-            AppLocalizations.of(
-              context,
-            )!
-                .cache: ['cache'],
-            AppLocalizations.of(
-              context,
-            )!
-                .downs: ['downloads'],
-            AppLocalizations.of(
-              context,
-            )!
-                .playlists: playlistNames,
+            AppLocalizations.of(context)!.settings: ['settings'],
+            AppLocalizations.of(context)!.cache: ['cache'],
+            AppLocalizations.of(context)!.downs: ['downloads'],
+            AppLocalizations.of(context)!.playlists: playlistNames,
           };
-          final String autoBackPath = Hive.box('settings').get(
-            'autoBackPath',
-            defaultValue: '',
-          ) as String;
+          final String autoBackPath = Hive.box('settings')
+              .get('autoBackPath', defaultValue: '') as String;
           if (autoBackPath == '') {
             ExtStorageProvider.getExtStorage(
-              dirName: 'Sangeet/Backups',
-              writeAccess: true,
-            ).then((value) {
+                    dirName: 'Sangeet/Backups', writeAccess: true)
+                .then((value) {
               Hive.box('settings').put('autoBackPath', value);
-              createBackup(
-                context,
-                checked,
-                boxNames,
-                path: value,
-                fileName: 'Sangeet_AutoBackup',
-                showDialog: false,
-              );
+              createBackup(context, checked, boxNames,
+                  path: value,
+                  fileName: 'Sangeet_AutoBackup',
+                  showDialog: false);
             });
           } else {
-            createBackup(
-              context,
-              checked,
-              boxNames,
-              path: autoBackPath,
-              fileName: 'Sangeet_AutoBackup',
-              showDialog: false,
-            );
+            createBackup(context, checked, boxNames,
+                path: autoBackPath,
+                fileName: 'Sangeet_AutoBackup',
+                showDialog: false);
           }
         }
       });
@@ -211,14 +158,6 @@ class _HomePageState extends State<HomePage> {
     } else {
       return const SizedBox();
     }
-  }
-
-  final ScrollController _scrollController = ScrollController();
-  final PageController _pageController = PageController();
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -253,15 +192,11 @@ class _HomePageState extends State<HomePage> {
                       text: TextSpan(
                         text: AppLocalizations.of(context)!.appTitle,
                         style: const TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w500,
-                        ),
+                            fontSize: 30.0, fontWeight: FontWeight.w500),
                         children: <TextSpan>[
                           TextSpan(
                             text: appVersion == null ? '' : '\nv$appVersion',
-                            style: const TextStyle(
-                              fontSize: 7.0,
-                            ),
+                            style: const TextStyle(fontSize: 7.0),
                           ),
                         ],
                       ),
@@ -279,18 +214,16 @@ class _HomePageState extends State<HomePage> {
                             Colors.black.withOpacity(0.1),
                           ],
                         ).createShader(
-                          Rect.fromLTRB(0, 0, rect.width, rect.height),
-                        );
+                            Rect.fromLTRB(0, 0, rect.width, rect.height));
                       },
                       blendMode: BlendMode.dstIn,
                       child: Image(
                         fit: BoxFit.cover,
                         alignment: Alignment.topCenter,
                         image: AssetImage(
-                          Theme.of(context).brightness == Brightness.dark
-                              ? 'assets/header-dark.jpg'
-                              : 'assets/header.jpg',
-                        ),
+                            Theme.of(context).brightness == Brightness.dark
+                                ? 'assets/header-dark.jpg'
+                                : 'assets/header.jpg'),
                       ),
                     ),
                   ),
@@ -299,18 +232,14 @@ class _HomePageState extends State<HomePage> {
                   delegate: SliverChildListDelegate(
                     [
                       ListTile(
-                        title: Text(
-                          AppLocalizations.of(context)!.home,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
+                        title: Text(AppLocalizations.of(context)!.home,
+                            style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.secondary)),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(
-                          Icons.home_rounded,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                        leading: Icon(Icons.home_rounded,
+                            color: Theme.of(context).colorScheme.secondary),
                         selected: true,
                         onTap: () {
                           Navigator.pop(context);
@@ -321,30 +250,23 @@ class _HomePageState extends State<HomePage> {
                           title: Text(AppLocalizations.of(context)!.myMusic),
                           contentPadding:
                               const EdgeInsets.symmetric(horizontal: 20.0),
-                          leading: Icon(
-                            MdiIcons.folderMusic,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
+                          leading: Icon(MdiIcons.folderMusic,
+                              color: Theme.of(context).iconTheme.color),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const DownloadedSongs(
-                                  showPlaylists: true,
-                                ),
-                              ),
-                            );
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const DownloadedSongs(
+                                        showPlaylists: true)));
                           },
                         ),
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.downs),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(
-                          Icons.download_done_rounded,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+                        leading: Icon(Icons.download_done_rounded,
+                            color: Theme.of(context).iconTheme.color),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/downloads');
@@ -354,10 +276,8 @@ class _HomePageState extends State<HomePage> {
                         title: Text(AppLocalizations.of(context)!.playlists),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(
-                          Icons.playlist_play_rounded,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+                        leading: Icon(Icons.playlist_play_rounded,
+                            color: Theme.of(context).iconTheme.color),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/playlists');
@@ -367,30 +287,23 @@ class _HomePageState extends State<HomePage> {
                         title: Text(AppLocalizations.of(context)!.settings),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(
-                          Icons
-                              .settings_rounded, // miscellaneous_services_rounded,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+                        leading: Icon(Icons.settings_rounded,
+                            color: Theme.of(context).iconTheme.color),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  SettingPage(callback: callback),
-                            ),
-                          );
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SettingPage(callback: callback)));
                         },
                       ),
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.about),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(
-                          Icons.info_outline_rounded,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+                        leading: Icon(Icons.info_outline_rounded,
+                            color: Theme.of(context).iconTheme.color),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/about');
@@ -407,11 +320,9 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                         child: Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.madeBy,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 12),
-                          ),
+                          child: Text(AppLocalizations.of(context)!.madeBy,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 12)),
                         ),
                       ),
                     ],
@@ -434,9 +345,7 @@ class _HomePageState extends State<HomePage> {
                       return NavigationRail(
                         minWidth: 70.0,
                         groupAlignment: 0.0,
-                        backgroundColor:
-                            // Colors.transparent,
-                            Theme.of(context).cardColor,
+                        backgroundColor: Theme.of(context).cardColor,
                         selectedIndex: indexValue,
                         onDestinationSelected: (int index) {
                           _onItemTapped(index);
@@ -445,15 +354,12 @@ class _HomePageState extends State<HomePage> {
                             ? NavigationRailLabelType.selected
                             : NavigationRailLabelType.none,
                         selectedLabelTextStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        unselectedLabelTextStyle: TextStyle(
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.w600),
+                        unselectedLabelTextStyle:
+                            TextStyle(color: Theme.of(context).iconTheme.color),
                         selectedIconTheme: Theme.of(context).iconTheme.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
+                            color: Theme.of(context).colorScheme.secondary),
                         unselectedIconTheme: Theme.of(context).iconTheme,
                         useIndicator: screenWidth < 1050,
                         indicatorColor: Theme.of(context)
@@ -466,10 +372,7 @@ class _HomePageState extends State<HomePage> {
                                 builder: (context) => Transform.rotate(
                                   angle: 22 / 7 * 2,
                                   child: IconButton(
-                                    icon: const Icon(
-                                      Icons.table_rows_rounded,
-                                    ),
-                                    // color: Theme.of(context).iconTheme.color,
+                                    icon: const Icon(Icons.table_rows_rounded),
                                     onPressed: () {
                                       Scaffold.of(context).openDrawer();
                                     },
@@ -485,9 +388,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           NavigationRailDestination(
                             icon: const Icon(Icons.trending_up_rounded),
-                            label: Text(
-                              AppLocalizations.of(context)!.topCharts,
-                            ),
+                            label:
+                                Text(AppLocalizations.of(context)!.topCharts),
                           ),
                           NavigationRailDestination(
                             icon: const Icon(MdiIcons.youtube),
@@ -507,9 +409,7 @@ class _HomePageState extends State<HomePage> {
                       Expanded(
                         child: PageView(
                           physics: const CustomPhysics(),
-                          onPageChanged: (indx) {
-                            _selectedIndex.value = indx;
-                          },
+                          onPageChanged: (indx) => _selectedIndex.value = indx,
                           controller: _pageController,
                           children: [
                             Stack(
@@ -518,50 +418,38 @@ class _HomePageState extends State<HomePage> {
                                 NestedScrollView(
                                   physics: const BouncingScrollPhysics(),
                                   controller: _scrollController,
-                                  headerSliverBuilder: (
-                                    BuildContext context,
-                                    bool innerBoxScrolled,
-                                  ) {
+                                  headerSliverBuilder: (BuildContext context,
+                                      bool innerBoxScrolled) {
                                     return <Widget>[
                                       SliverAppBar(
                                         expandedHeight: 135,
                                         backgroundColor: Colors.transparent,
                                         elevation: 0,
-                                        // pinned: true,
                                         toolbarHeight: 65,
-                                        // floating: true,
                                         automaticallyImplyLeading: false,
                                         flexibleSpace: LayoutBuilder(
-                                          builder: (
-                                            BuildContext context,
-                                            BoxConstraints constraints,
-                                          ) {
+                                          builder: (BuildContext context,
+                                              BoxConstraints constraints) {
                                             return FlexibleSpaceBar(
-                                              // collapseMode: CollapseMode.parallax,
                                               background: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
-                                                  const SizedBox(
-                                                    height: 60,
-                                                  ),
+                                                  const SizedBox(height: 60),
                                                   Row(
                                                     children: [
                                                       Padding(
                                                         padding:
                                                             const EdgeInsets
                                                                 .only(
-                                                          left: 15.0,
-                                                        ),
+                                                                left: 15.0),
                                                         child: Text(
                                                           AppLocalizations.of(
-                                                            context,
-                                                          )!
+                                                                  context)!
                                                               .discover,
                                                           style: TextStyle(
                                                             letterSpacing: 3,
                                                             color: Theme.of(
-                                                              context,
-                                                            )
+                                                                    context)
                                                                 .colorScheme
                                                                 .secondary,
                                                             fontSize: 50,
@@ -575,24 +463,25 @@ class _HomePageState extends State<HomePage> {
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.only(
-                                                      left: 15.0,
-                                                    ),
+                                                            left: 15.0),
                                                     child: Row(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .end,
                                                       children: [
-                                                        Text(
-                                                          AppLocalizations.of(
-                                                            context,
-                                                          )!
-                                                              .recommended,
-                                                          style:
-                                                              const TextStyle(
-                                                            letterSpacing: 2,
-                                                            fontSize: 20,
-                                                            fontWeight:
-                                                                FontWeight.w500,
+                                                        Expanded(
+                                                          child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .recommended,
+                                                            style:
+                                                                const TextStyle(
+                                                              letterSpacing: 2,
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
                                                           ),
                                                         ),
                                                       ],
@@ -621,7 +510,6 @@ class _HomePageState extends State<HomePage> {
                                                   width: (!_scrollController
                                                               .hasClients ||
                                                           _scrollController
-                                                                  // ignore: invalid_use_of_protected_member
                                                                   .positions
                                                                   .length >
                                                               1)
@@ -640,48 +528,41 @@ class _HomePageState extends State<HomePage> {
                                                                   .width -
                                                               (rotated
                                                                   ? 0
-                                                                  : 75),
-                                                        ),
+                                                                  : 75)),
                                                   height: 52.0,
                                                   duration: const Duration(
-                                                    milliseconds: 150,
-                                                  ),
+                                                      milliseconds: 150),
                                                   padding:
                                                       const EdgeInsets.all(2.0),
                                                   decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                      10.0,
-                                                    ),
+                                                            10.0),
                                                     color: Theme.of(context)
                                                         .cardColor,
                                                     boxShadow: const [
                                                       BoxShadow(
-                                                        color: Colors.black26,
-                                                        blurRadius: 5.0,
-                                                        offset:
-                                                            Offset(1.5, 1.5),
-                                                      ),
+                                                          color: Colors.black26,
+                                                          blurRadius: 5.0,
+                                                          offset:
+                                                              Offset(1.5, 1.5))
                                                     ],
                                                   ),
                                                   child: Row(
                                                     children: [
                                                       const SizedBox(
-                                                        width: 8.0,
-                                                      ),
+                                                          width: 8.0),
                                                       Icon(
-                                                        CupertinoIcons.search,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
-                                                      ),
+                                                          CupertinoIcons.search,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary),
                                                       const SizedBox(
-                                                        width: 8.0,
-                                                      ),
+                                                          width: 8.0),
                                                       Text(
                                                         AppLocalizations.of(
-                                                          context,
-                                                        )!
+                                                                context)!
                                                             .searchText,
                                                         style: TextStyle(
                                                           fontSize: 15.0,
@@ -695,22 +576,19 @@ class _HomePageState extends State<HomePage> {
                                                         ),
                                                       ),
                                                       const SizedBox(
-                                                        width: 11.0,
-                                                      ),
+                                                          width: 11.0),
                                                     ],
                                                   ),
                                                 ),
                                                 onTap: () => Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const SearchPage(
-                                                      query: '',
-                                                      fromHome: true,
-                                                      autofocus: true,
-                                                    ),
-                                                  ),
-                                                ),
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const SearchPage(
+                                                                query: '',
+                                                                fromHome: true,
+                                                                autofocus:
+                                                                    true))),
                                               );
                                             },
                                           ),
@@ -724,16 +602,12 @@ class _HomePageState extends State<HomePage> {
                                   Builder(
                                     builder: (context) => Padding(
                                       padding: const EdgeInsets.only(
-                                        top: 8.0,
-                                        left: 4.0,
-                                      ),
+                                          top: 8.0, left: 4.0),
                                       child: Transform.rotate(
                                         angle: 22 / 7 * 2,
                                         child: IconButton(
                                           icon: const Icon(
-                                            Icons.table_rows_rounded,
-                                          ),
-                                          // color: Theme.of(context).iconTheme.color,
+                                              Icons.table_rows_rounded),
                                           onPressed: () {
                                             Scaffold.of(context).openDrawer();
                                           },
@@ -747,9 +621,7 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                             if (sectionsToShow.contains('Top Songs'))
-                              TopCharts(
-                                pageController: _pageController,
-                              ),
+                              TopCharts(pageController: _pageController),
                             const YouTube(),
                             const LibraryPage(),
                             if (sectionsToShow.contains('Settings'))
@@ -790,9 +662,8 @@ class _HomePageState extends State<HomePage> {
                           if (sectionsToShow.contains('Top Songs'))
                             SalomonBottomBarItem(
                               icon: const Icon(Icons.travel_explore_rounded),
-                              title: Text(
-                                AppLocalizations.of(context)!.topCharts,
-                              ),
+                              title:
+                                  Text(AppLocalizations.of(context)!.topCharts),
                               selectedColor:
                                   Theme.of(context).colorScheme.secondary,
                             ),
