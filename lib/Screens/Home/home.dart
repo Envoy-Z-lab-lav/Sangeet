@@ -4,11 +4,11 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:sangeet/CustomWidgets/custom_physics.dart';
 import 'package:sangeet/CustomWidgets/gradient_containers.dart';
 import 'package:sangeet/CustomWidgets/miniplayer.dart';
@@ -39,15 +39,19 @@ class _HomePageState extends State<HomePage> {
       Hive.box('settings').get('checkUpdate', defaultValue: false) as bool;
   bool autoBackup =
       Hive.box('settings').get('autoBackup', defaultValue: false) as bool;
-  List sectionsToShow = Hive.box('settings').get('sectionsToShow',
-      defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library']) as List;
+  List sectionsToShow = Hive.box('settings').get(
+    'sectionsToShow',
+    defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library'],
+  ) as List;
   DateTime? backButtonPressTime;
   final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
 
   void callback() {
-    sectionsToShow = Hive.box('settings').get('sectionsToShow',
-        defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library']) as List;
+    sectionsToShow = Hive.box('settings').get(
+      'sectionsToShow',
+      defaultValue: ['Home', 'Top Songs', 'YouTube', 'Library'],
+    ) as List;
     setState(() {});
   }
 
@@ -83,8 +87,11 @@ class _HomePageState extends State<HomePage> {
     if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
       backButtonPressTime = now;
       ShowSnackBar().showSnackBar(
-          context, AppLocalizations.of(context)!.exitConfirm,
-          duration: const Duration(seconds: 2), noAction: true);
+        context,
+        AppLocalizations.of(context)!.exitConfirm,
+        duration: const Duration(seconds: 2),
+        noAction: true,
+      );
       return false;
     }
     return true;
@@ -99,17 +106,21 @@ class _HomePageState extends State<HomePage> {
           GitHub.getLatestVersion().then((String version) async {
             if (compareVersion(version, appVersion!)) {
               ShowSnackBar().showSnackBar(
-                  context, AppLocalizations.of(context)!.updateAvailable,
-                  duration: const Duration(seconds: 15),
-                  action: SnackBarAction(
-                      textColor: Theme.of(context).colorScheme.secondary,
-                      label: AppLocalizations.of(context)!.update,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        launchUrl(
-                            Uri.parse('https://sumanishere.github.io/Sangeet/'),
-                            mode: LaunchMode.externalApplication);
-                      }));
+                context,
+                AppLocalizations.of(context)!.updateAvailable,
+                duration: const Duration(seconds: 15),
+                action: SnackBarAction(
+                  textColor: Theme.of(context).colorScheme.secondary,
+                  label: AppLocalizations.of(context)!.update,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    launchUrl(
+                      Uri.parse('https://sumanishere.github.io/Sangeet/'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                ),
+              );
             }
           });
         }
@@ -117,7 +128,7 @@ class _HomePageState extends State<HomePage> {
           final List<String> checked = [
             AppLocalizations.of(context)!.settings,
             AppLocalizations.of(context)!.downs,
-            AppLocalizations.of(context)!.playlists
+            AppLocalizations.of(context)!.playlists,
           ];
           final List playlistNames = Hive.box('settings')
               .get('playlistNames', defaultValue: ['Favorite Songs']) as List;
@@ -131,19 +142,28 @@ class _HomePageState extends State<HomePage> {
               .get('autoBackPath', defaultValue: '') as String;
           if (autoBackPath == '') {
             ExtStorageProvider.getExtStorage(
-                    dirName: 'Sangeet/Backups', writeAccess: true)
-                .then((value) {
+              dirName: 'Sangeet/Backups',
+              writeAccess: true,
+            ).then((value) {
               Hive.box('settings').put('autoBackPath', value);
-              createBackup(context, checked, boxNames,
-                  path: value,
-                  fileName: 'Sangeet_AutoBackup',
-                  showDialog: false);
+              createBackup(
+                context,
+                checked,
+                boxNames,
+                path: value,
+                fileName: 'Sangeet_AutoBackup',
+                showDialog: false,
+              );
             });
           } else {
-            createBackup(context, checked, boxNames,
-                path: autoBackPath,
-                fileName: 'Sangeet_AutoBackup',
-                showDialog: false);
+            createBackup(
+              context,
+              checked,
+              boxNames,
+              path: autoBackPath,
+              fileName: 'Sangeet_AutoBackup',
+              showDialog: false,
+            );
           }
         }
       });
@@ -192,7 +212,9 @@ class _HomePageState extends State<HomePage> {
                       text: TextSpan(
                         text: AppLocalizations.of(context)!.appTitle,
                         style: const TextStyle(
-                            fontSize: 30.0, fontWeight: FontWeight.w500),
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.w500,
+                        ),
                         children: <TextSpan>[
                           TextSpan(
                             text: appVersion == null ? '' : '\nv$appVersion',
@@ -214,16 +236,18 @@ class _HomePageState extends State<HomePage> {
                             Colors.black.withOpacity(0.1),
                           ],
                         ).createShader(
-                            Rect.fromLTRB(0, 0, rect.width, rect.height));
+                          Rect.fromLTRB(0, 0, rect.width, rect.height),
+                        );
                       },
                       blendMode: BlendMode.dstIn,
                       child: Image(
                         fit: BoxFit.cover,
                         alignment: Alignment.topCenter,
                         image: AssetImage(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? 'assets/header-dark.jpg'
-                                : 'assets/header.jpg'),
+                          Theme.of(context).brightness == Brightness.dark
+                              ? 'assets/header-dark.jpg'
+                              : 'assets/header.jpg',
+                        ),
                       ),
                     ),
                   ),
@@ -232,14 +256,18 @@ class _HomePageState extends State<HomePage> {
                   delegate: SliverChildListDelegate(
                     [
                       ListTile(
-                        title: Text(AppLocalizations.of(context)!.home,
-                            style: TextStyle(
-                                color:
-                                    Theme.of(context).colorScheme.secondary)),
+                        title: Text(
+                          AppLocalizations.of(context)!.home,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(Icons.home_rounded,
-                            color: Theme.of(context).colorScheme.secondary),
+                        leading: Icon(
+                          Icons.home_rounded,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                         selected: true,
                         onTap: () {
                           Navigator.pop(context);
@@ -250,23 +278,30 @@ class _HomePageState extends State<HomePage> {
                           title: Text(AppLocalizations.of(context)!.myMusic),
                           contentPadding:
                               const EdgeInsets.symmetric(horizontal: 20.0),
-                          leading: Icon(MdiIcons.folderMusic,
-                              color: Theme.of(context).iconTheme.color),
+                          leading: Icon(
+                            MdiIcons.folderMusic,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const DownloadedSongs(
-                                        showPlaylists: true)));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DownloadedSongs(
+                                  showPlaylists: true,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.downs),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(Icons.download_done_rounded,
-                            color: Theme.of(context).iconTheme.color),
+                        leading: Icon(
+                          Icons.download_done_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/downloads');
@@ -276,8 +311,10 @@ class _HomePageState extends State<HomePage> {
                         title: Text(AppLocalizations.of(context)!.playlists),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(Icons.playlist_play_rounded,
-                            color: Theme.of(context).iconTheme.color),
+                        leading: Icon(
+                          Icons.playlist_play_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/playlists');
@@ -287,23 +324,29 @@ class _HomePageState extends State<HomePage> {
                         title: Text(AppLocalizations.of(context)!.settings),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(Icons.settings_rounded,
-                            color: Theme.of(context).iconTheme.color),
+                        leading: Icon(
+                          Icons.settings_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SettingPage(callback: callback)));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SettingPage(callback: callback),
+                            ),
+                          );
                         },
                       ),
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.about),
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 20.0),
-                        leading: Icon(Icons.info_outline_rounded,
-                            color: Theme.of(context).iconTheme.color),
+                        leading: Icon(
+                          Icons.info_outline_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/about');
@@ -320,9 +363,11 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                         child: Center(
-                          child: Text(AppLocalizations.of(context)!.madeBy,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 12)),
+                          child: Text(
+                            AppLocalizations.of(context)!.madeBy,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ),
                       ),
                     ],
@@ -354,12 +399,14 @@ class _HomePageState extends State<HomePage> {
                             ? NavigationRailLabelType.selected
                             : NavigationRailLabelType.none,
                         selectedLabelTextStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.w600),
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.w600,
+                        ),
                         unselectedLabelTextStyle:
                             TextStyle(color: Theme.of(context).iconTheme.color),
                         selectedIconTheme: Theme.of(context).iconTheme.copyWith(
-                            color: Theme.of(context).colorScheme.secondary),
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                         unselectedIconTheme: Theme.of(context).iconTheme,
                         useIndicator: screenWidth < 1050,
                         indicatorColor: Theme.of(context)
@@ -418,8 +465,10 @@ class _HomePageState extends State<HomePage> {
                                 NestedScrollView(
                                   physics: const BouncingScrollPhysics(),
                                   controller: _scrollController,
-                                  headerSliverBuilder: (BuildContext context,
-                                      bool innerBoxScrolled) {
+                                  headerSliverBuilder: (
+                                    BuildContext context,
+                                    bool innerBoxScrolled,
+                                  ) {
                                     return <Widget>[
                                       SliverAppBar(
                                         expandedHeight: 135,
@@ -428,8 +477,10 @@ class _HomePageState extends State<HomePage> {
                                         toolbarHeight: 65,
                                         automaticallyImplyLeading: false,
                                         flexibleSpace: LayoutBuilder(
-                                          builder: (BuildContext context,
-                                              BoxConstraints constraints) {
+                                          builder: (
+                                            BuildContext context,
+                                            BoxConstraints constraints,
+                                          ) {
                                             return FlexibleSpaceBar(
                                               background: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -441,15 +492,18 @@ class _HomePageState extends State<HomePage> {
                                                         padding:
                                                             const EdgeInsets
                                                                 .only(
-                                                                left: 15.0),
+                                                          left: 15.0,
+                                                        ),
                                                         child: Text(
                                                           AppLocalizations.of(
-                                                                  context)!
+                                                            context,
+                                                          )!
                                                               .discover,
                                                           style: TextStyle(
                                                             letterSpacing: 3,
                                                             color: Theme.of(
-                                                                    context)
+                                                              context,
+                                                            )
                                                                 .colorScheme
                                                                 .secondary,
                                                             fontSize: 50,
@@ -463,7 +517,8 @@ class _HomePageState extends State<HomePage> {
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.only(
-                                                            left: 15.0),
+                                                      left: 15.0,
+                                                    ),
                                                     child: Row(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -472,7 +527,8 @@ class _HomePageState extends State<HomePage> {
                                                         Expanded(
                                                           child: Text(
                                                             AppLocalizations.of(
-                                                                    context)!
+                                                              context,
+                                                            )!
                                                                 .recommended,
                                                             style:
                                                                 const TextStyle(
@@ -528,41 +584,48 @@ class _HomePageState extends State<HomePage> {
                                                                   .width -
                                                               (rotated
                                                                   ? 0
-                                                                  : 75)),
+                                                                  : 75),
+                                                        ),
                                                   height: 52.0,
                                                   duration: const Duration(
-                                                      milliseconds: 150),
+                                                    milliseconds: 150,
+                                                  ),
                                                   padding:
                                                       const EdgeInsets.all(2.0),
                                                   decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            10.0),
+                                                      10.0,
+                                                    ),
                                                     color: Theme.of(context)
                                                         .cardColor,
                                                     boxShadow: const [
                                                       BoxShadow(
-                                                          color: Colors.black26,
-                                                          blurRadius: 5.0,
-                                                          offset:
-                                                              Offset(1.5, 1.5))
+                                                        color: Colors.black26,
+                                                        blurRadius: 5.0,
+                                                        offset:
+                                                            Offset(1.5, 1.5),
+                                                      ),
                                                     ],
                                                   ),
                                                   child: Row(
                                                     children: [
                                                       const SizedBox(
-                                                          width: 8.0),
+                                                        width: 8.0,
+                                                      ),
                                                       Icon(
-                                                          CupertinoIcons.search,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary),
+                                                        CupertinoIcons.search,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                      ),
                                                       const SizedBox(
-                                                          width: 8.0),
+                                                        width: 8.0,
+                                                      ),
                                                       Text(
                                                         AppLocalizations.of(
-                                                                context)!
+                                                          context,
+                                                        )!
                                                             .searchText,
                                                         style: TextStyle(
                                                           fontSize: 15.0,
@@ -576,19 +639,22 @@ class _HomePageState extends State<HomePage> {
                                                         ),
                                                       ),
                                                       const SizedBox(
-                                                          width: 11.0),
+                                                        width: 11.0,
+                                                      ),
                                                     ],
                                                   ),
                                                 ),
                                                 onTap: () => Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const SearchPage(
-                                                                query: '',
-                                                                fromHome: true,
-                                                                autofocus:
-                                                                    true))),
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const SearchPage(
+                                                      query: '',
+                                                      fromHome: true,
+                                                      autofocus: true,
+                                                    ),
+                                                  ),
+                                                ),
                                               );
                                             },
                                           ),
@@ -602,12 +668,15 @@ class _HomePageState extends State<HomePage> {
                                   Builder(
                                     builder: (context) => Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 8.0, left: 4.0),
+                                        top: 8.0,
+                                        left: 4.0,
+                                      ),
                                       child: Transform.rotate(
                                         angle: 22 / 7 * 2,
                                         child: IconButton(
                                           icon: const Icon(
-                                              Icons.table_rows_rounded),
+                                            Icons.table_rows_rounded,
+                                          ),
                                           onPressed: () {
                                             Scaffold.of(context).openDrawer();
                                           },
@@ -647,47 +716,73 @@ class _HomePageState extends State<HomePage> {
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 100),
                       height: 60,
-                      child: SalomonBottomBar(
-                        currentIndex: indexValue,
-                        onTap: (index) {
-                          _onItemTapped(index);
-                        },
-                        items: [
-                          SalomonBottomBarItem(
-                            icon: const Icon(Icons.home_rounded),
-                            title: Text(AppLocalizations.of(context)!.home),
-                            selectedColor:
-                                Theme.of(context).colorScheme.secondary,
+                      child: GlassFlexContainer(
+                        borderRadius: BorderRadius.zero,
+                        borderGradient: const LinearGradient(
+                          colors: [Color.fromARGB(0, 11, 11, 11)],
+                          stops: [0],
+                        ),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                           ),
-                          if (sectionsToShow.contains('Top Songs'))
-                            SalomonBottomBarItem(
-                              icon: const Icon(Icons.travel_explore_rounded),
-                              title:
-                                  Text(AppLocalizations.of(context)!.topCharts),
-                              selectedColor:
-                                  Theme.of(context).colorScheme.secondary,
-                            ),
-                          SalomonBottomBarItem(
-                            icon: const Icon(MdiIcons.youtube),
-                            title: Text(AppLocalizations.of(context)!.youTube),
-                            selectedColor:
-                                Theme.of(context).colorScheme.secondary,
+                          child: BottomNavigationBar(
+                            type: BottomNavigationBarType.fixed,
+                            currentIndex: indexValue,
+                            onTap: _onItemTapped,
+                            items: [
+                              BottomNavigationBarItem(
+                                icon: const Icon(
+                                  Icons.home_filled,
+                                  size: 35,
+                                ),
+                                label: AppLocalizations.of(context)!.home,
+                              ),
+                              if (sectionsToShow.contains('Top Songs'))
+                                BottomNavigationBarItem(
+                                  icon: const Icon(
+                                    Icons.travel_explore_rounded,
+                                    size: 35,
+                                  ),
+                                  label:
+                                      AppLocalizations.of(context)!.topCharts,
+                                ),
+                              BottomNavigationBarItem(
+                                icon: const Icon(
+                                  MdiIcons.youtube,
+                                  size: 35,
+                                ),
+                                label: AppLocalizations.of(context)!.youTube,
+                              ),
+                              BottomNavigationBarItem(
+                                icon: const Icon(
+                                  Icons.my_library_music_rounded,
+                                  size: 35,
+                                ),
+                                label: AppLocalizations.of(context)!.library,
+                              ),
+                              if (sectionsToShow.contains('Settings'))
+                                BottomNavigationBarItem(
+                                  icon: const Icon(
+                                    Icons.settings_rounded,
+                                    size: 35,
+                                  ),
+                                  label: AppLocalizations.of(context)!.settings,
+                                ),
+                            ],
+                            elevation: 0,
+                            selectedLabelStyle:
+                                const TextStyle(color: Colors.white),
+                            selectedItemColor:
+                                const Color.fromARGB(255, 255, 17, 0),
+                            unselectedItemColor: Colors.grey,
+                            showUnselectedLabels: true,
+                            backgroundColor: Colors.transparent,
+                            unselectedFontSize: 13.0,
+                            selectedFontSize: 13.0,
                           ),
-                          SalomonBottomBarItem(
-                            icon: const Icon(Icons.my_library_music_rounded),
-                            title: Text(AppLocalizations.of(context)!.library),
-                            selectedColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                          if (sectionsToShow.contains('Settings'))
-                            SalomonBottomBarItem(
-                              icon: const Icon(Icons.settings_rounded),
-                              title:
-                                  Text(AppLocalizations.of(context)!.settings),
-                              selectedColor:
-                                  Theme.of(context).colorScheme.secondary,
-                            ),
-                        ],
+                        ),
                       ),
                     );
                   },
