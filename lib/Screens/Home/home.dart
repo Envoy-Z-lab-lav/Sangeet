@@ -597,84 +597,88 @@ class _HomePageState extends State<HomePage> {
         ),
         bottomNavigationBar: rotated
             ? null
-            : SafeArea(
-                child: ValueListenableBuilder(
-                  valueListenable: _selectedIndex,
-                  builder:
-                      (BuildContext context, int indexValue, Widget? child) {
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 100),
-                      height: 60,
-                      child: GlassFlexContainer(
-                        borderRadius: BorderRadius.zero,
-                        borderGradient: const LinearGradient(
-                          colors: [Color.fromARGB(0, 11, 11, 11)],
-                          stops: [0],
-                        ),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+            : Padding(
+                padding: EdgeInsets.zero, // Remove padding from SafeArea
+                child: SafeArea(
+                  child: ValueListenableBuilder(
+                    valueListenable: _selectedIndex,
+                    builder:
+                        (BuildContext context, int indexValue, Widget? child) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 100),
+                        height: 60,
+                        child: GlassFlexContainer(
+                          borderRadius: BorderRadius.zero,
+                          borderGradient: const LinearGradient(
+                            colors: [Color.fromARGB(0, 11, 11, 11)],
+                            stops: [0],
                           ),
-                          child: BottomNavigationBar(
-                            type: BottomNavigationBarType.fixed,
-                            currentIndex: indexValue,
-                            onTap: _onItemTapped,
-                            items: [
-                              BottomNavigationBarItem(
-                                icon: const Icon(
-                                  Icons.home_filled,
-                                  size: 35,
-                                ),
-                                label: AppLocalizations.of(context)!.home,
-                              ),
-                              if (sectionsToShow.contains('Top Songs'))
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                            ),
+                            child: BottomNavigationBar(
+                              type: BottomNavigationBarType.fixed,
+                              currentIndex: indexValue,
+                              onTap: _onItemTapped,
+                              items: [
                                 BottomNavigationBarItem(
                                   icon: const Icon(
-                                    Icons.travel_explore_rounded,
+                                    Icons.home_filled,
                                     size: 35,
                                   ),
-                                  label:
-                                      AppLocalizations.of(context)!.topCharts,
+                                  label: AppLocalizations.of(context)!.home,
                                 ),
-                              BottomNavigationBarItem(
-                                icon: const Icon(
-                                  MdiIcons.youtube,
-                                  size: 35,
-                                ),
-                                label: AppLocalizations.of(context)!.youTube,
-                              ),
-                              BottomNavigationBarItem(
-                                icon: const Icon(
-                                  Icons.my_library_music_rounded,
-                                  size: 35,
-                                ),
-                                label: AppLocalizations.of(context)!.library,
-                              ),
-                              if (sectionsToShow.contains('Settings'))
+                                if (sectionsToShow.contains('Top Songs'))
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(
+                                      Icons.travel_explore_rounded,
+                                      size: 35,
+                                    ),
+                                    label:
+                                        AppLocalizations.of(context)!.topCharts,
+                                  ),
                                 BottomNavigationBarItem(
                                   icon: const Icon(
-                                    Icons.settings_rounded,
+                                    MdiIcons.youtube,
                                     size: 35,
                                   ),
-                                  label: AppLocalizations.of(context)!.settings,
+                                  label: AppLocalizations.of(context)!.youTube,
                                 ),
-                            ],
-                            elevation: 0,
-                            selectedLabelStyle:
-                                const TextStyle(color: Colors.white),
-                            selectedItemColor:
-                                const Color.fromARGB(255, 255, 17, 0),
-                            unselectedItemColor: Colors.grey,
-                            showUnselectedLabels: true,
-                            backgroundColor: Colors.transparent,
-                            unselectedFontSize: 13.0,
-                            selectedFontSize: 13.0,
+                                BottomNavigationBarItem(
+                                  icon: const Icon(
+                                    Icons.my_library_music_rounded,
+                                    size: 35,
+                                  ),
+                                  label: AppLocalizations.of(context)!.library,
+                                ),
+                                if (sectionsToShow.contains('Settings'))
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(
+                                      Icons.settings_rounded,
+                                      size: 35,
+                                    ),
+                                    label:
+                                        AppLocalizations.of(context)!.settings,
+                                  ),
+                              ],
+                              elevation: 0,
+                              selectedLabelStyle:
+                                  const TextStyle(color: Colors.white),
+                              selectedItemColor:
+                                  const Color.fromARGB(255, 255, 17, 0),
+                              unselectedItemColor: Colors.grey,
+                              showUnselectedLabels: true,
+                              backgroundColor: Colors.transparent,
+                              unselectedFontSize: 13.0,
+                              selectedFontSize: 13.0,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
       ),
