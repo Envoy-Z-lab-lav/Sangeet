@@ -5,7 +5,7 @@ on:
 
 env:
   JAVA_VERSION: "17.x"
-  FLUTTER_CHANNEL: "stable"
+  FLUTTER_VERSION: "3.5.1"
 
 jobs:
   apk_compilation: 
@@ -39,7 +39,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
           cache: true
 
       # Install Dependencies
